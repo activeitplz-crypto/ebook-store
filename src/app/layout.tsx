@@ -1,8 +1,8 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/components/cart-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { FloatingWhatsApp } from '@/components/floating-whatsapp';
 
 export const metadata: Metadata = {
   title: 'JanzyEbooks Store',
@@ -19,6 +19,7 @@ export default function RootLayout({
       <body className="antialiased">
         <CartProvider>
           {children}
+          <FloatingWhatsApp />
           <Toaster />
         </CartProvider>
       </body>
