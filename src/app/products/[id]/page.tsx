@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createClient } from '@/lib/supabase/server';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -12,6 +14,7 @@ import Link from 'next/link';
 import { CheckoutDialog } from '@/components/checkout-dialog';
 import { DynamicScarcityIndicators } from '@/components/dynamic-scarcity-indicators';
 import { ReviewForm } from '@/components/review-form';
+import { ProductImageGallery } from './product-image-gallery';
 
 export default async function ProductDetailsPage({ params }: { params: { id: string } }) {
   const supabase = await createClient();
@@ -51,21 +54,20 @@ export default async function ProductDetailsPage({ params }: { params: { id: str
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
     : null;
 
+  const images = [
+    product.image_url,
+    product.image_url_2,
+    product.image_url_3
+  ].filter(Boolean) as string[];
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
       
       <main className="flex-1 container mx-auto px-4 md:px-8 py-6 md:py-12">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-start mb-12 md:mb-20">
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-muted group shadow-sm">
-            <Image
-              src={product.image_url || `https://picsum.photos/seed/${product.id}/800/1000`}
-              alt={product.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              priority
-            />
-          </div>
+          {/* Product Gallery */}
+          <ProductImageGallery images={images} title={product.title} />
 
           <div className="flex flex-col gap-4 md:gap-6">
             <DynamicScarcityIndicators />

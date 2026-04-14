@@ -7,6 +7,8 @@ export interface Product {
   rating: number;
   category: string | null;
   image_url: string | null;
+  image_url_2?: string | null;
+  image_url_3?: string | null;
   image_hint: string | null;
   description?: string | null;
   created_at: string;

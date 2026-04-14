@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createClient } from '@/lib/supabase/server';
 import { Header } from '@/components/header';
 import Image from 'next/image';
@@ -11,13 +13,14 @@ import Link from 'next/link';
 import { CheckoutDialog } from '@/components/checkout-dialog';
 import { DynamicScarcityIndicators } from '@/components/dynamic-scarcity-indicators';
 import { ReviewForm } from '@/components/review-form';
+import { ProductImageGallery } from '@/app/products/[id]/product-image-gallery';
 
 export default async function BookDetailsPage({ params }: { params: { id: string } }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Fetch the current book
   const { data: book, error: bookError } = await supabase
-    .from('books')
+    .from('products') // Using products table for books as well
     .select('*')
     .eq('id', params.id)
     .single();
@@ -30,12 +33,12 @@ export default async function BookDetailsPage({ params }: { params: { id: string
   const { data: reviews } = await supabase
     .from('reviews')
     .select('*')
-    .eq('book_id', params.id)
+    .eq('product_id', params.id)
     .order('created_at', { ascending: false });
 
   // Fetch "You may also like" books
   const { data: relatedBooks } = await supabase
-    .from('books')
+    .from('products')
     .select('*')
     .neq('id', params.id)
     .limit(4);
@@ -56,22 +59,20 @@ export default async function BookDetailsPage({ params }: { params: { id: string
     .single();
   const storeName = settings?.value || 'JanzyEbooks';
 
+  const images = [
+    book.image_url,
+    book.image_url_2,
+    book.image_url_3
+  ].filter(Boolean) as string[];
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
       
       <main className="flex-1 container mx-auto px-4 md:px-8 py-6 md:py-12">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-start mb-12 md:mb-20">
-          {/* Left: Product Image */}
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-muted group shadow-sm">
-            <Image
-              src={book.image_url || `https://picsum.photos/seed/${book.id}/800/1000`}
-              alt={book.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              priority
-            />
-          </div>
+          {/* Gallery Section */}
+          <ProductImageGallery images={images} title={book.title} />
 
           {/* Right: Product Details */}
           <div className="flex flex-col gap-4 md:gap-6">
@@ -118,8 +119,8 @@ export default async function BookDetailsPage({ params }: { params: { id: string
 
             {/* Buttons */}
             <div className="flex flex-col gap-3 pt-4">
-              <AddToCartButton book={book} className="h-12 md:h-14 rounded-full border-2 border-slate-900 bg-transparent text-slate-900 hover:bg-slate-50" />
-              <CheckoutDialog book={book} />
+              <AddToCartButton product={book} className="h-12 md:h-14 rounded-full border-2 border-slate-900 bg-transparent text-slate-900 hover:bg-slate-50" />
+              <CheckoutDialog product={book} />
             </div>
 
             {/* Description Highlights */}
@@ -153,7 +154,7 @@ export default async function BookDetailsPage({ params }: { params: { id: string
               </div>
             )}
 
-            <ReviewForm bookId={book.id} />
+            <ReviewForm productId={book.id} />
 
             <div className="space-y-8 md:space-y-12">
               {hasReviews ? (

@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -21,6 +20,8 @@ export type Database = {
           rating: number
           category: string | null
           image_url: string | null
+          image_url_2: string | null
+          image_url_3: string | null
           image_hint: string | null
           description: string | null
           is_bestseller: boolean
@@ -35,6 +36,8 @@ export type Database = {
           rating?: number
           category?: string | null
           image_url?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
           image_hint?: string | null
           description?: string | null
           is_bestseller?: boolean
@@ -49,6 +52,8 @@ export type Database = {
           rating?: number
           category?: string | null
           image_url?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
           image_hint?: string | null
           description?: string | null
           is_bestseller?: boolean
