@@ -71,7 +71,7 @@ export default async function eBookStore() {
 
       <main className="flex-1">
         <div className="p-4 md:p-6 lg:p-8 bg-background">
-          <section className="relative w-full aspect-[16/9] md:aspect-[21/7] lg:aspect-[3/1] overflow-hidden bg-slate-900 border-4 md:border-8 border-slate-100 rounded-xl md:rounded-3xl shadow-lg ring-1 ring-slate-200">
+          <section className="relative w-full aspect-[4/3] md:aspect-[3/1] overflow-hidden bg-slate-900 border-4 md:border-8 border-slate-100 rounded-xl md:rounded-3xl shadow-lg ring-1 ring-slate-200">
             <Image 
               src={heroBannerUrl} 
               alt="Hero Banner" 
