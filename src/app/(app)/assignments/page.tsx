@@ -1,4 +1,3 @@
-
 import { createClient } from '@/lib/supabase/server';
 import {
   Card,
@@ -24,14 +23,13 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { FileCheck2, History, Info } from 'lucide-react';
 
 export default async function AssignmentsPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { session }} = await supabase.auth.getSession();
 
   if (!session) {
     redirect('/login');
   }
   
-  // Fetch user profile and their active plan details in one go
   const { data: user, error: userError } = await supabase
     .from('profiles')
     .select('id, name, current_plan')
@@ -55,9 +53,8 @@ export default async function AssignmentsPage() {
   
   const dailyAssignmentLimit = plan?.daily_assignments || 0;
   
-  // Get assignments submitted today
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Start of today
+  today.setHours(0, 0, 0, 0);
   const { count: assignmentsTodayCount, error: countError } = await supabase
     .from('assignments')
     .select('*', { count: 'exact', head: true })
@@ -78,7 +75,6 @@ export default async function AssignmentsPage() {
 
    if (assignmentsError) {
     console.error('Error fetching assignments:', assignmentsError);
-    // Non-critical, so we can still render the rest of the page
   }
 
   return (

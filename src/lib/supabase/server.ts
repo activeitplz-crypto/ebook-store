@@ -7,7 +7,6 @@ export async function createClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Provide a fallback to a dummy valid URL to prevent "Invalid supabaseUrl" crash during dev
   const validUrl = supabaseUrl && supabaseUrl.startsWith('http') 
     ? supabaseUrl 
     : 'https://placeholder.supabase.co';

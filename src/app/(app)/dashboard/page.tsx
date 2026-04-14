@@ -1,4 +1,3 @@
-
 import { createClient } from '@/lib/supabase/server';
 import {
   Card,
@@ -11,7 +10,7 @@ import { DollarSign, Zap, Briefcase, Wallet } from 'lucide-react';
 import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { session }} = await supabase.auth.getSession();
 
   if (!session) {
@@ -70,7 +69,7 @@ export default async function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-         <Card className="bg-card/80">
+        <Card className="bg-card/80">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground">
               Active Plan
@@ -83,7 +82,7 @@ export default async function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-         <Card className="bg-card/80">
+        <Card className="bg-card/80">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground">
               Current Balance
