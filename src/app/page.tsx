@@ -198,13 +198,11 @@ export default async function eBookStore() {
                 {blogPosts && blogPosts.length > 0 && (
                   <section className="py-12 md:py-20 border-t">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-                      <div className="relative aspect-video md:aspect-square overflow-hidden rounded-2xl shadow-xl">
-                        <Image 
+                      <div className="overflow-hidden rounded-2xl shadow-xl">
+                        <img 
                           src={blogPosts[0].image_url || 'https://picsum.photos/seed/blog/800/800'} 
                           alt={blogPosts[0].title} 
-                          fill 
-                          className="object-cover"
-                          data-ai-hint="blog image"
+                          className="w-full h-auto block"
                         />
                       </div>
                       <div className="space-y-6">
