@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -71,17 +72,16 @@ export default async function eBookStore() {
 
       <main className="flex-1">
         <div className="p-4 md:p-6 lg:p-8 bg-background">
-          <section className="relative w-full aspect-[4/3] md:aspect-[3/1] overflow-hidden bg-slate-900 border-4 md:border-8 border-slate-100 rounded-xl md:rounded-3xl shadow-lg ring-1 ring-slate-200">
-            <Image 
+          <section className="relative w-full overflow-hidden bg-slate-100 border-4 md:border-8 border-slate-100 rounded-xl md:rounded-3xl shadow-lg ring-1 ring-slate-200">
+            {/* The image now drives the height of the section */}
+            <img 
               src={heroBannerUrl} 
               alt="Hero Banner" 
-              fill 
-              className="object-cover opacity-80"
-              priority
-              data-ai-hint="library banner"
+              className="w-full h-auto block object-contain"
+              style={{ opacity: 0.95 }}
             />
             {heroTitle && heroTitle.trim() !== "" && (
-              <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
+              <div className="absolute inset-0 flex items-center justify-center p-6 text-center bg-black/10">
                 <h1 className="text-white text-3xl md:text-6xl font-bold font-headline tracking-tight drop-shadow-2xl">
                   {heroTitle}
                 </h1>
