@@ -1,4 +1,3 @@
-
 export const dynamic = 'force-dynamic';
 
 import {
@@ -15,11 +14,9 @@ import { UsersTable } from './users-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ManageTasksForm } from './manage-tasks-form';
 import { AssignmentsTable } from './assignments-table';
-import { ManageTopUsersForm } from './manage-top-users-form';
 import { ManageReviewsForm } from './manage-reviews-form';
 import { ManageVideosForm } from './manage-videos-form';
-import type { Plan, Task, TopUser, Review, Video } from '@/lib/types';
-
+import type { Plan, Task, Review, Video } from '@/lib/types';
 
 export default async function AdminPage({
   searchParams,
@@ -35,9 +32,6 @@ export default async function AdminPage({
   const { data: tasksData } = await supabase.from('tasks').select('*').order('created_at');
   const tasks: Task[] = tasksData || [];
 
-  const { data: topUsersData } = await supabase.from('top_users').select('*').order('created_at', { ascending: false });
-  const topUsers: TopUser[] = topUsersData || [];
-
   const { data: reviewsData } = await supabase.from('reviews').select('*').order('created_at', { ascending: false });
   const reviews: Review[] = reviewsData || [];
 
@@ -46,14 +40,13 @@ export default async function AdminPage({
 
   return (
     <Tabs defaultValue={defaultTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-9">
+      <TabsList className="grid w-full grid-cols-8">
         <TabsTrigger value="assignments">Assignments</TabsTrigger>
         <TabsTrigger value="payments">Plan Payments</TabsTrigger>
         <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
         <TabsTrigger value="users">All Users</TabsTrigger>
         <TabsTrigger value="plans">Manage Plans</TabsTrigger>
         <TabsTrigger value="tasks">Manage Tasks</TabsTrigger>
-        <TabsTrigger value="top-users">Top Users</TabsTrigger>
         <TabsTrigger value="reviews">Reviews</TabsTrigger>
         <TabsTrigger value="videos">Guidelines</TabsTrigger>
       </TabsList>
@@ -88,10 +81,6 @@ export default async function AdminPage({
 
       <TabsContent value="tasks">
         <ManageTasksForm tasks={tasks} />
-      </TabsContent>
-      
-      <TabsContent value="top-users">
-        <ManageTopUsersForm topUsers={topUsers} />
       </TabsContent>
       
       <TabsContent value="reviews">

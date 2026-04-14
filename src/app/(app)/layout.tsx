@@ -1,4 +1,3 @@
-
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
@@ -12,8 +11,6 @@ import {
   Loader2,
   FileCheck2,
   ImageIcon,
-  Users,
-  Award,
   MessageSquare,
   HelpCircle,
   Video,
@@ -23,7 +20,6 @@ import { cn } from '@/lib/utils';
 import { ProAssignmentIcon } from '@/components/pro-assignment-icon';
 import { MobileNav } from '@/components/mobile-nav';
 import { logout } from '@/app/auth/actions';
-import { UserNav } from '@/components/user-nav';
 import { useRouter } from 'next/navigation';
 import type { Profile } from '@/lib/types';
 import type { Session } from '@supabase/supabase-js';
@@ -50,7 +46,6 @@ export default function AppLayout({
         return;
       }
       
-      // Redirect admin away from user dashboard
       if (currentSession.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
         router.push('/admin');
         return;
@@ -64,7 +59,6 @@ export default function AppLayout({
       
       if (error || !profile) {
         console.error('Error fetching profile:', error);
-        // Could redirect or show an error state
       } else {
         setUser(profile);
       }
@@ -83,7 +77,7 @@ export default function AppLayout({
     );
 
     return () => subscription.unsubscribe();
-  }, [router, supabase, supabase.auth]);
+  }, [router, supabase]);
 
 
   if (loading) {
@@ -95,7 +89,7 @@ export default function AppLayout({
   }
   
   if (!session || !user) {
-    return null; // Or a redirect component
+    return null;
   }
   
   const navItems = [
@@ -108,7 +102,6 @@ export default function AppLayout({
 
   const actionItems = [
     { href: '/guide', label: 'Guide', icon: HelpCircle },
-    { href: '/top-users', label: 'Top Users', icon: Award },
     { href: '/reviews', label: 'Reviews', icon: MessageSquare },
     { href: 'https://postimages.org/', label: 'Postimages', icon: ImageIcon, target: '_blank' },
   ];

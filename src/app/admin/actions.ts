@@ -14,7 +14,6 @@ async function verifyAdmin() {
   return supabase;
 }
 
-// Helper function to handle Supabase responses
 async function handleSupabaseResponse<T>(query: Promise<{ data: T | null; error: PostgrestError | null }>): Promise<T> {
   const { data, error } = await query;
   if (error) {
@@ -26,7 +25,6 @@ async function handleSupabaseResponse<T>(query: Promise<{ data: T | null; error:
   }
   return data;
 }
-
 
 export async function approvePayment(formData: FormData) {
   const paymentId = formData.get('paymentId') as string;
@@ -60,7 +58,6 @@ export async function approvePayment(formData: FormData) {
         .single()
     );
       
-    // Use a transaction to ensure all or nothing
     const { error: transactionError } = await supabase.rpc('approve_payment_and_distribute_bonus', {
         p_payment_id: paymentId,
         p_user_id: profile.id,
@@ -80,7 +77,6 @@ export async function approvePayment(formData: FormData) {
   revalidatePath('/admin');
   return { error: null };
 }
-
 
 export async function rejectPayment(formData: FormData) {
   const supabase = await verifyAdmin();
@@ -158,11 +154,9 @@ export async function savePlan(formData: z.infer<typeof planSchema>) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/admin?tab=plans', 'page');
     revalidatePath('/plans');
     return { error: null };
 }
-
 
 const taskSchema = z.object({
     id: z.string().optional(),
@@ -187,7 +181,6 @@ export async function saveTask(formData: z.infer<typeof taskSchema>) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/admin?tab=tasks', 'page');
     revalidatePath('/tasks');
     return { error: null };
 }
@@ -205,7 +198,6 @@ export async function deleteTask(formData: FormData) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/admin?tab=tasks', 'page');
     revalidatePath('/tasks');
     return { error: null };
 }
@@ -246,52 +238,6 @@ export async function rejectAssignment(formData: FormData) {
   revalidatePath('/assignments');
 }
 
-const topUserSchema = z.object({
-    id: z.string().optional(),
-    image_url: z.string().url('Must be a valid URL'),
-});
-
-export async function saveTopUser(formData: z.infer<typeof topUserSchema>) {
-    const supabase = await verifyAdmin();
-    const validatedData = topUserSchema.parse(formData);
-    const { id, ...topUserData } = validatedData;
-
-    try {
-        if (id) {
-            await supabase.from('top_users').update(topUserData).eq('id', id);
-        } else {
-            await supabase.from('top_users').insert(topUserData);
-        }
-    } catch (error: any) {
-        console.error('Save Top User Error:', error);
-        return { error: `Failed to save top user screenshot. Database error: ${error.message}` };
-    }
-
-    revalidatePath('/admin');
-    revalidatePath('/admin?tab=top-users', 'page');
-    revalidatePath('/top-users');
-    return { error: null };
-}
-
-export async function deleteTopUser(formData: FormData) {
-    const supabase = await verifyAdmin();
-    const id = formData.get('id') as string;
-    if (!id) return { error: 'Top User ID is missing' };
-
-    try {
-        await supabase.from('top_users').delete().eq('id', id);
-    } catch (error: any) {
-        console.error('Delete Top User Error:', error);
-        return { error: `Failed to delete screenshot. Database error: ${error.message}` };
-    }
-
-    revalidatePath('/admin');
-    revalidatePath('/admin?tab=top-users', 'page');
-    revalidatePath('/top-users');
-    return { error: null };
-}
-
-
 const reviewSchema = z.object({
     id: z.string().optional(),
     name: z.string().min(1, 'Reviewer name is required'),
@@ -315,7 +261,6 @@ export async function saveReview(formData: z.infer<typeof reviewSchema>) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/admin?tab=reviews', 'page');
     revalidatePath('/reviews');
     return { error: null };
 }
@@ -333,11 +278,9 @@ export async function deleteReview(formData: FormData) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/admin?tab=reviews', 'page');
     revalidatePath('/reviews');
     return { error: null };
 }
-
 
 const videoSchema = z.object({
     id: z.string().optional(),
@@ -362,7 +305,6 @@ export async function saveVideo(formData: z.infer<typeof videoSchema>) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/admin?tab=videos', 'page');
     revalidatePath('/watch');
     return { error: null };
 }
@@ -380,7 +322,6 @@ export async function deleteVideo(formData: FormData) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/admin?tab=videos', 'page');
     revalidatePath('/watch');
     return { error: null };
 }
