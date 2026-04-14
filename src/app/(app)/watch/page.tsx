@@ -24,7 +24,7 @@ function getYouTubeEmbedUrl(url: string): string | null {
 }
 
 export default async function WatchVideosPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { session }} = await supabase.auth.getSession();
 
   if (!session) {

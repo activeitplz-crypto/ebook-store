@@ -34,7 +34,7 @@ import {
 import { format } from 'date-fns';
 
 export default async function PlansPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: plans, error: plansError } = await supabase.from('plans').select('*').order('investment');

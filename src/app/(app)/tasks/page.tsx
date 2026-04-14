@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { redirect } from 'next/navigation';
 
 export default async function TasksPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
    const { data: { session }} = await supabase.auth.getSession();
 
   if (!session) {

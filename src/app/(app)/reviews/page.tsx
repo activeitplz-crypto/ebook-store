@@ -7,7 +7,7 @@ import type { Review } from '@/lib/types';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export default async function ReviewsPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { session }} = await supabase.auth.getSession();
 
   if (!session) {

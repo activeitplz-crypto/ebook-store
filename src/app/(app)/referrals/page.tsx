@@ -22,7 +22,7 @@ import { format } from 'date-fns';
 import type { Profile } from '@/lib/types';
 
 export default async function ReferralsPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { session }} = await supabase.auth.getSession();
 
   if (!session) {
