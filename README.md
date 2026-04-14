@@ -17,28 +17,21 @@ A premium digital ebook storefront built with **Next.js 15**, **Tailwind CSS**, 
 - **Database**: Supabase (PostgreSQL)
 - **Storage**: Supabase Storage (for payment receipts)
 
-## 📦 Getting Started
+## 📦 GitHub Deployment
 
-1. **Environment Variables**:
-   Create a `.env.local` file:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+To push this code to a new repository:
 
-2. **Database Setup**:
-   Run the SQL scripts provided in the app components to create the necessary tables:
-   - `products`
-   - `orders`
-   - `payment_methods`
-   - `site_settings`
-   - `reviews`
+1. Create a repository on GitHub named `ebook-store`.
+2. Run the following commands:
 
-3. **Install & Run**:
-   ```bash
-   npm install
-   npm run dev
-   ```
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/Janzy44/ebook-store.git
+git push -u origin main
+```
 
 ## 📄 License
 MIT
