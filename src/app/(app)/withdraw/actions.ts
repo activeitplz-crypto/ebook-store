@@ -13,7 +13,7 @@ const withdrawalSchema = z.object({
 });
 
 export async function requestWithdrawal(formData: z.infer<typeof withdrawalSchema>) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

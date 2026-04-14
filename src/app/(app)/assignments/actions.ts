@@ -10,7 +10,7 @@ const assignmentSchema = z.object({
 }).catchall(z.string().url().or(z.literal(''))); // Allows url1, url2, etc.
 
 export async function submitAssignment(formData: Record<string, any>) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

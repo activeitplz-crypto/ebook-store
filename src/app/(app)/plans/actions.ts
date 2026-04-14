@@ -9,7 +9,7 @@ export async function purchasePlan(formData: FormData) {
   const planId = formData.get('plan_id') as string;
   const paymentUid = formData.get('payment_uid') as string;
   
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!planId || !paymentUid || !user) {

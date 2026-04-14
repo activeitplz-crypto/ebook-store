@@ -22,12 +22,13 @@ A premium digital ebook storefront built with **Next.js 15**, **Tailwind CSS**, 
 To push this code to your repository:
 
 1. Create a repository on GitHub named `ebook-store`.
-2. Run the following commands:
+2. Run the following commands in your terminal:
 
 ```bash
 git init
+git remote remove origin
 git add .
-git commit -m "Initial commit"
+git commit -m "Initial commit for Premium Ebook Store"
 git branch -M main
 git remote add origin https://github.com/activeitplz-crypto/ebook-store.git
 git push -u origin main
