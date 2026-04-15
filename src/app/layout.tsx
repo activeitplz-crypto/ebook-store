@@ -7,6 +7,9 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp';
 export const metadata: Metadata = {
   title: 'JanzyEbooks Store',
   description: 'Your premium destination for knowledge and adventure.',
+  icons: {
+    icon: 'https://i.postimg.cc/4NycZngc/In-Shot-20250828-122821151.png',
+  },
 };
 
 export default function RootLayout({
