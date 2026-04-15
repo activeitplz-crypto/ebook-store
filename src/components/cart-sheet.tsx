@@ -17,6 +17,11 @@ import { CheckoutDialog } from './checkout-dialog';
 export function CartSheet() {
   const { cart, removeFromCart, totalItems, totalPrice } = useCart();
 
+  // Construct a comma-separated string of product titles with quantities
+  const cartTitles = cart
+    .map((item) => `${item.title}${item.quantity > 1 ? ` (x${item.quantity})` : ''}`)
+    .join(', ');
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -77,7 +82,7 @@ export function CartSheet() {
               <span className="text-muted-foreground">Subtotal</span>
               <span className="text-2xl font-bold text-primary">PKR {totalPrice.toFixed(2)}</span>
             </div>
-            <CheckoutDialog product={{ title: `Cart (${totalItems} items)`, price: totalPrice }} />
+            <CheckoutDialog product={{ title: cartTitles, price: totalPrice }} />
           </SheetFooter>
         )}
       </SheetContent>
