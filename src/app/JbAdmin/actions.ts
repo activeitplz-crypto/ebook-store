@@ -30,11 +30,12 @@ export async function adminLogout() {
 }
 
 /**
- * Updates the status of an order.
+ * Updates the status of an order and ensures it persists in Supabase.
  */
 export async function updateOrderStatus(orderId: string, status: 'pending' | 'confirmed' | 'rejected') {
   const cookieStore = await cookies();
-  const isAuth = cookieStore.get('jb_admin_session')?.value === 'authenticated';
+  const session = cookieStore.get('jb_admin_session');
+  const isAuth = session?.value === 'authenticated';
   
   if (!isAuth) {
     return { error: 'Unauthorized access.' };
@@ -42,18 +43,25 @@ export async function updateOrderStatus(orderId: string, status: 'pending' | 'co
 
   const supabase = await createClient();
   
-  // Update the status in the database
-  const { error } = await supabase
+  // Update the status in the database and request the updated record back to verify success
+  const { data, error } = await supabase
     .from('orders')
-    .update({ status })
-    .eq('id', orderId);
+    .update({ status: status })
+    .eq('id', orderId)
+    .select();
 
   if (error) {
     console.error('Update Order Status Error:', error);
     return { error: error.message };
   }
 
-  // Force revalidation of the admin page data
-  revalidatePath('/JbAdmin', 'page');
+  if (!data || data.length === 0) {
+    return { error: 'Order not found or update failed.' };
+  }
+
+  // Force revalidation of the admin page and the home page to update stats
+  revalidatePath('/JbAdmin');
+  revalidatePath('/');
+  
   return { success: true };
 }

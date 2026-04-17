@@ -31,14 +31,14 @@ import {
 import { format, subDays, isAfter, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { adminLogout } from './actions';
-import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 import { OrderActions } from './order-actions';
 
 export default async function JbAdminPage() {
   const cookieStore = await cookies();
-  const isAuth = cookieStore.get('jb_admin_session')?.value === 'authenticated';
+  const session = cookieStore.get('jb_admin_session');
+  const isAuth = session?.value === 'authenticated';
 
   if (!isAuth) {
     return <LoginForm />;
@@ -55,15 +55,15 @@ export default async function JbAdminPage() {
   if (error) {
     return (
       <div className="p-8 text-center">
-        <p className="text-destructive font-bold">Error loading sales data. Please check database connection.</p>
+        <p className="text-destructive font-bold">Error loading sales data: {error.message}</p>
       </div>
     );
   }
 
   const orderList = orders || [];
 
-  // Stats Calculation - Ensuring case-insensitive matching for 'confirmed'
-  const confirmedOrders = orderList.filter(o => o.status?.toLowerCase() === 'confirmed');
+  // Stats Calculation - Exact matching for 'confirmed' status
+  const confirmedOrders = orderList.filter(o => String(o.status).toLowerCase() === 'confirmed');
   
   const now = new Date();
   const todayStart = startOfDay(now);
@@ -167,7 +167,7 @@ export default async function JbAdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orderList.slice(0, 50).map((order) => {
+                  {orderList.slice(0, 100).map((order) => {
                     return (
                       <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
                         <TableCell className="font-medium">
