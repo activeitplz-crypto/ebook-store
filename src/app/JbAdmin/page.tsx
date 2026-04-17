@@ -52,6 +52,15 @@ export default async function JbAdminPage() {
     .select('*')
     .order('created_at', { ascending: false });
 
+  // Fetch site settings for logo and store name
+  const { data: settings } = await supabase
+    .from('site_settings')
+    .select('id, value')
+    .in('id', ['store_logo_url', 'store_name']);
+  
+  const logoUrl = settings?.find(s => s.id === 'store_logo_url')?.value || 'https://i.postimg.cc/brsQS29S/Modern-Public-Library-Logo-Template-(1).png';
+  const storeName = settings?.find(s => s.id === 'store_name')?.value || 'JanzyEbooks';
+
   if (error) {
     return (
       <div className="p-8 text-center">
@@ -92,13 +101,24 @@ export default async function JbAdminPage() {
     <div className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="container mx-auto space-y-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold font-headline tracking-tight text-slate-900">Sales Dashboard</h1>
-            <p className="text-muted-foreground italic">Comprehensive overview of store performance and revenue.</p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="relative h-16 w-16 overflow-hidden rounded-xl shadow-md border bg-white p-1 shrink-0">
+               <Image 
+                 src={logoUrl} 
+                 alt={`${storeName} Logo`} 
+                 fill 
+                 className="object-contain"
+                 priority
+               />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold font-headline tracking-tight text-slate-900">Sales Dashboard</h1>
+              <p className="text-muted-foreground italic">Comprehensive overview of {storeName} performance.</p>
+            </div>
           </div>
           <form action={adminLogout}>
-            <Button variant="outline" className="gap-2 text-destructive border-destructive/20 hover:bg-destructive/5">
+            <Button variant="outline" className="gap-2 text-destructive border-destructive/20 hover:bg-destructive/5 shadow-sm">
               <LogOut className="h-4 w-4" /> Sign Out
             </Button>
           </form>
