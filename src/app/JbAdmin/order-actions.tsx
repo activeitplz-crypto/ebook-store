@@ -29,9 +29,9 @@ export function OrderActions({ orderId, currentStatus }: OrderActionsProps) {
       if (result.success) {
         toast({
           title: 'Status Updated',
-          description: `Order is now ${status}.`,
+          description: `Order #${orderId.slice(0, 5)} is now ${status}.`,
         });
-        // Force a client-side refresh to show updated stats immediately
+        // refresh ensures server components re-fetch the latest data
         router.refresh();
       } else {
         toast({
@@ -47,11 +47,11 @@ export function OrderActions({ orderId, currentStatus }: OrderActionsProps) {
     <div className="flex items-center gap-2 justify-end">
       {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
       <Select
-        defaultValue={currentStatus || 'pending'}
+        defaultValue={String(currentStatus || 'pending').toLowerCase()}
         onValueChange={(val) => handleStatusUpdate(val as any)}
         disabled={isPending}
       >
-        <SelectTrigger className="h-8 w-[120px] text-[10px] font-bold uppercase tracking-wider">
+        <SelectTrigger className="h-8 w-[120px] text-[10px] font-bold uppercase tracking-wider bg-white">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>

@@ -43,23 +43,25 @@ export async function updateOrderStatus(orderId: string, status: 'pending' | 'co
 
   const supabase = await createClient();
   
-  // Update the status in the database and request the updated record back to verify success
-  const { data, error } = await supabase
+  // Update the status in the database
+  // We use lowercase to match the Postgres ENUM type exactly
+  const { data, error, count } = await supabase
     .from('orders')
-    .update({ status: status })
+    .update({ status: status.toLowerCase() })
     .eq('id', orderId)
     .select();
 
   if (error) {
-    console.error('Update Order Status Error:', error);
+    console.error('Supabase Update Error:', error);
     return { error: error.message };
   }
 
+  // If data is returned, the update was successful
   if (!data || data.length === 0) {
-    return { error: 'Order not found or update failed.' };
+    return { error: 'Update failed: Order not found or RLS policy blocked the change. Please ensure RLS is disabled on the orders table.' };
   }
 
-  // Force revalidation of the admin page and the home page to update stats
+  // Force revalidation of all paths that show order data
   revalidatePath('/JbAdmin');
   revalidatePath('/');
   
