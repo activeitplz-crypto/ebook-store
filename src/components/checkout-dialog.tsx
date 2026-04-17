@@ -18,7 +18,9 @@ import {
   Upload, 
   Copy, 
   Check,
-  Info
+  Info,
+  ShieldAlert,
+  Clock
 } from 'lucide-react';
 import { submitOrder } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -302,10 +304,44 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
                 )}
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <Button type="submit" className="w-full h-12 text-base font-bold rounded-full shadow-lg shadow-primary/20" disabled={isPending || !currentMethod}>
                   {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'PLACE ORDER'}
                 </Button>
+
+                {/* Policy Notice */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 shadow-sm">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+                    <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                    <h4 className="font-bold text-sm text-slate-800">Payment Verification & Order Policy</h4>
+                  </div>
+                  
+                  <div className="space-y-3 text-[13px] leading-relaxed">
+                    <div className="flex gap-2 text-slate-600">
+                      <div className="shrink-0 mt-1 h-1.5 w-1.5 rounded-full bg-blue-400" />
+                      <p><span className="font-semibold text-slate-800">Payment Verify</span> hone ke baad hi aapko PDF Book aapki Email Address par bhej di jayegi.</p>
+                    </div>
+
+                    <div className="flex gap-2 text-slate-600">
+                      <Clock className="shrink-0 h-4 w-4 text-blue-500" />
+                      <p>Aap apni email or whatsaap jo apny dia hog check karte rahein <span className="font-semibold text-slate-800">10 Mint</span> ky aneder book recive ho jayegi. Book receive hone ke baad aap usay download bhi kar sakte hain.</p>
+                    </div>
+
+                    <div className="flex gap-2 text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">
+                      <ShieldAlert className="shrink-0 h-4 w-4 mt-0.5" />
+                      <p className="font-medium"><span className="font-bold">Warning:</span> Agar aapne Payment ka Screenshoot fake lagaya, ya Payment humein receive nahi hoti, to aapka Order Cancel kar diya jayega bina kisi notice ke.</p>
+                    </div>
+
+                    <div className="flex gap-2 text-slate-500 italic">
+                      <div className="shrink-0 mt-1 h-1.5 w-1.5 rounded-full bg-slate-300" />
+                      <p><span className="font-semibold">Request:</span> Sahi information daalein taake aapka order jaldi process ho sake.</p>
+                    </div>
+                  </div>
+
+                  <div className="text-center pt-2">
+                    <p className="text-sm font-bold text-primary italic">Shukriya!</p>
+                  </div>
+                </div>
               </div>
             </form>
           </div>
