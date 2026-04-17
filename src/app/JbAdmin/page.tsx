@@ -1,4 +1,3 @@
-
 export const dynamic = 'force-dynamic';
 
 import { cookies } from 'next/headers';
@@ -28,7 +27,8 @@ import {
   Clock,
   Truck,
   ExternalLink,
-  ImageIcon
+  ImageIcon,
+  Settings2
 } from 'lucide-react';
 import { format, subDays, isAfter, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,7 @@ import { adminLogout } from './actions';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
+import { OrderActions } from './order-actions';
 
 export default async function JbAdminPage() {
   const cookieStore = await cookies();
@@ -61,7 +62,7 @@ export default async function JbAdminPage() {
     );
   }
 
-  // Earnings are calculated based on 'confirmed' status (case-insensitive)
+  // Earnings are calculated based on 'confirmed' status
   const confirmedOrders = orders.filter(o => o.status?.toLowerCase() === 'confirmed');
   
   // Stats Calculation
@@ -150,7 +151,7 @@ export default async function JbAdminPage() {
         <Card className="border-none shadow-xl bg-white overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b">
             <CardTitle className="text-xl font-bold font-headline">Recent Orders</CardTitle>
-            <CardDescription>The most recent 50 transactions on your store.</CardDescription>
+            <CardDescription>Manage and track the most recent 50 transactions.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -160,17 +161,18 @@ export default async function JbAdminPage() {
                     <TableHead className="font-bold">Customer</TableHead>
                     <TableHead className="font-bold">Delivery Contact</TableHead>
                     <TableHead className="font-bold">Products</TableHead>
-                    <TableHead className="font-bold">Price</TableHead>
-                    <TableHead className="font-bold">Method</TableHead>
-                    <TableHead className="font-bold">Receipt</TableHead>
-                    <TableHead className="font-bold">Date</TableHead>
-                    <TableHead className="font-bold text-right">Status</TableHead>
+                    <TableHead className="font-bold text-center">Price</TableHead>
+                    <TableHead className="font-bold text-center">Receipt</TableHead>
+                    <TableHead className="font-bold text-center">Date</TableHead>
+                    <TableHead className="font-bold text-center">Status</TableHead>
+                    <TableHead className="font-bold text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {orders.slice(0, 50).map((order) => {
                     const isConfirmed = order.status?.toLowerCase() === 'confirmed';
                     const isRejected = order.status?.toLowerCase() === 'rejected';
+                    const isPending = !isConfirmed && !isRejected;
                     
                     return (
                       <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
@@ -186,53 +188,56 @@ export default async function JbAdminPage() {
                             {order.delivery_contact}
                           </div>
                         </TableCell>
-                        <TableCell className="min-w-[200px] max-w-[300px] py-4" title={order.product_title}>
+                        <TableCell className="min-w-[200px] max-w-[300px] py-4">
                           <div className="text-slate-800 leading-tight break-words">
                             {order.product_title}
                           </div>
                         </TableCell>
-                        <TableCell className="font-bold text-primary">
+                        <TableCell className="font-bold text-primary text-center">
                           Rs {Number(order.price || 0).toLocaleString()}
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="bg-slate-50 text-[10px] uppercase tracking-wider">
-                            {order.payment_method || 'N/A'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {order.screenshot_url ? (
-                            <Link 
-                              href={order.screenshot_url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="group relative block h-10 w-10 overflow-hidden rounded border border-slate-200 hover:border-primary transition-colors"
-                            >
-                              <Image 
-                                src={order.screenshot_url} 
-                                alt="Payment Proof" 
-                                fill 
-                                className="object-cover group-hover:scale-110 transition-transform"
-                              />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                <ExternalLink className="h-3 w-3 text-white" />
+                        <TableCell className="text-center">
+                          <div className="flex justify-center">
+                            {order.screenshot_url ? (
+                              <Link 
+                                href={order.screenshot_url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="group relative block h-10 w-10 overflow-hidden rounded border border-slate-200 hover:border-primary transition-colors"
+                              >
+                                <Image 
+                                  src={order.screenshot_url} 
+                                  alt="Payment Proof" 
+                                  fill 
+                                  className="object-cover group-hover:scale-110 transition-transform"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                  <ExternalLink className="h-3 w-3 text-white" />
+                                </div>
+                              </Link>
+                            ) : (
+                              <div className="h-10 w-10 rounded border border-dashed border-slate-200 flex items-center justify-center text-slate-300">
+                                <ImageIcon className="h-4 w-4" />
                               </div>
-                            </Link>
-                          ) : (
-                            <div className="h-10 w-10 rounded border border-dashed border-slate-200 flex items-center justify-center text-slate-300">
-                              <ImageIcon className="h-4 w-4" />
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
+                        <TableCell className="text-xs text-muted-foreground text-center">
                           {format(new Date(order.created_at), 'MMM dd, yyyy')}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           <Badge 
                             variant={isConfirmed ? 'default' : isRejected ? 'destructive' : 'secondary'}
                             className="capitalize text-[10px]"
                           >
-                            {order.status}
+                            {order.status || 'pending'}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {isPending && <OrderActions orderId={order.id} />}
+                          {!isPending && (
+                            <span className="text-[10px] text-muted-foreground italic">Processed</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
