@@ -57,7 +57,7 @@ export default async function JbAdminPage() {
     );
   }
 
-  // Earnings are now calculated based on 'confirmed' status
+  // Earnings are calculated based on 'confirmed' status (case-insensitive)
   const confirmedOrders = orders.filter(o => o.status?.toLowerCase() === 'confirmed');
   
   // Stats Calculation
