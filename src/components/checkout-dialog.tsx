@@ -297,6 +297,9 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
                     </div>
 
                     <div className="space-y-3">
+                      <p className="text-[13px] text-right text-slate-600 font-medium" dir="rtl">
+                        براہِ کرم اپنا WhatsApp نمبر یا email ایڈریس فراہم کریں تاکہ ہم آپ کو ای بک بھیج سکیں۔
+                      </p>
                       <Label htmlFor="delivery_contact" className="text-sm font-bold text-slate-700">Delivery Contact (Email or WhatsApp)</Label>
                       <Input id="delivery_contact" name="delivery_contact" required className="bg-white" />
                     </div>
