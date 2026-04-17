@@ -1,26 +1,33 @@
 'use client';
 
 import { useTransition } from 'react';
-import { Button } from '@/components/ui/button';
-import { Check, X, Loader2 } from 'lucide-react';
 import { updateOrderStatus } from './actions';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Loader2 } from 'lucide-react';
 
 interface OrderActionsProps {
   orderId: string;
+  currentStatus: string;
 }
 
-export function OrderActions({ orderId }: OrderActionsProps) {
+export function OrderActions({ orderId, currentStatus }: OrderActionsProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
-  const handleStatusUpdate = (status: 'confirmed' | 'rejected') => {
+  const handleStatusUpdate = (status: 'pending' | 'confirmed' | 'rejected') => {
     startTransition(async () => {
       const result = await updateOrderStatus(orderId, status);
       if (result.success) {
         toast({
-          title: `Order ${status === 'confirmed' ? 'Approved' : 'Rejected'}`,
-          description: `The order status has been updated to ${status}.`,
+          title: 'Status Updated',
+          description: `Order is now ${status}.`,
         });
       } else {
         toast({
@@ -34,26 +41,21 @@ export function OrderActions({ orderId }: OrderActionsProps) {
 
   return (
     <div className="flex items-center gap-2 justify-end">
-      <Button
-        size="sm"
-        variant="outline"
-        className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200"
-        onClick={() => handleStatusUpdate('confirmed')}
+      {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+      <Select
+        defaultValue={currentStatus || 'pending'}
+        onValueChange={(val) => handleStatusUpdate(val as any)}
         disabled={isPending}
-        title="Approve Order"
       >
-        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-      </Button>
-      <Button
-        size="sm"
-        variant="outline"
-        className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
-        onClick={() => handleStatusUpdate('rejected')}
-        disabled={isPending}
-        title="Reject Order"
-      >
-        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
-      </Button>
+        <SelectTrigger className="h-8 w-[120px] text-[10px] font-bold uppercase tracking-wider">
+          <SelectValue placeholder="Status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="pending" className="text-[10px] font-bold text-slate-500 uppercase">Pending</SelectItem>
+          <SelectItem value="confirmed" className="text-[10px] font-bold text-green-600 uppercase">Confirmed</SelectItem>
+          <SelectItem value="rejected" className="text-[10px] font-bold text-red-600 uppercase">Rejected</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 }

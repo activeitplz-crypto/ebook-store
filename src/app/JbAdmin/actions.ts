@@ -32,7 +32,7 @@ export async function adminLogout() {
 /**
  * Updates the status of an order.
  */
-export async function updateOrderStatus(orderId: string, status: 'confirmed' | 'rejected') {
+export async function updateOrderStatus(orderId: string, status: 'pending' | 'confirmed' | 'rejected') {
   const cookieStore = await cookies();
   const isAuth = cookieStore.get('jb_admin_session')?.value === 'authenticated';
   

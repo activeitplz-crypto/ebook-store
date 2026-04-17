@@ -19,7 +19,6 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { 
-  DollarSign, 
   ShoppingBag, 
   Calendar, 
   TrendingUp, 
@@ -27,8 +26,7 @@ import {
   Clock,
   Truck,
   ExternalLink,
-  ImageIcon,
-  Settings2
+  ImageIcon
 } from 'lucide-react';
 import { format, subDays, isAfter, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -150,8 +148,8 @@ export default async function JbAdminPage() {
         {/* Recent Orders Table */}
         <Card className="border-none shadow-xl bg-white overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b">
-            <CardTitle className="text-xl font-bold font-headline">Recent Orders</CardTitle>
-            <CardDescription>Manage and track the most recent 50 transactions.</CardDescription>
+            <CardTitle className="text-xl font-bold font-headline">Manage Orders</CardTitle>
+            <CardDescription>Track status and update payments. Earnings update instantly upon "Confirmed" status.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -164,16 +162,11 @@ export default async function JbAdminPage() {
                     <TableHead className="font-bold text-center">Price</TableHead>
                     <TableHead className="font-bold text-center">Receipt</TableHead>
                     <TableHead className="font-bold text-center">Date</TableHead>
-                    <TableHead className="font-bold text-center">Status</TableHead>
-                    <TableHead className="font-bold text-right">Actions</TableHead>
+                    <TableHead className="font-bold text-right">Update Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {orders.slice(0, 50).map((order) => {
-                    const isConfirmed = order.status?.toLowerCase() === 'confirmed';
-                    const isRejected = order.status?.toLowerCase() === 'rejected';
-                    const isPending = !isConfirmed && !isRejected;
-                    
                     return (
                       <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
                         <TableCell className="font-medium">
@@ -188,12 +181,12 @@ export default async function JbAdminPage() {
                             {order.delivery_contact}
                           </div>
                         </TableCell>
-                        <TableCell className="min-w-[200px] max-w-[300px] py-4">
-                          <div className="text-slate-800 leading-tight break-words">
+                        <TableCell className="py-4">
+                          <div className="text-slate-800 leading-tight">
                             {order.product_title}
                           </div>
                         </TableCell>
-                        <TableCell className="font-bold text-primary text-center">
+                        <TableCell className="font-bold text-primary text-center whitespace-nowrap">
                           Rs {Number(order.price || 0).toLocaleString()}
                         </TableCell>
                         <TableCell className="text-center">
@@ -225,19 +218,8 @@ export default async function JbAdminPage() {
                         <TableCell className="text-xs text-muted-foreground text-center">
                           {format(new Date(order.created_at), 'MMM dd, yyyy')}
                         </TableCell>
-                        <TableCell className="text-center">
-                          <Badge 
-                            variant={isConfirmed ? 'default' : isRejected ? 'destructive' : 'secondary'}
-                            className="capitalize text-[10px]"
-                          >
-                            {order.status || 'pending'}
-                          </Badge>
-                        </TableCell>
                         <TableCell className="text-right">
-                          {isPending && <OrderActions orderId={order.id} />}
-                          {!isPending && (
-                            <span className="text-[10px] text-muted-foreground italic">Processed</span>
-                          )}
+                          <OrderActions orderId={order.id} currentStatus={order.status} />
                         </TableCell>
                       </TableRow>
                     );
@@ -291,5 +273,26 @@ function StatCard({
         </p>
       </CardContent>
     </Card>
+  );
+}
+
+function ExternalLink({ className }: { className?: string }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
   );
 }
