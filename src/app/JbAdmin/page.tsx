@@ -181,8 +181,10 @@ export default async function JbAdminPage() {
                             {order.delivery_contact}
                           </div>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate" title={order.product_title}>
-                          {order.product_title}
+                        <TableCell className="min-w-[250px] py-4" title={order.product_title}>
+                          <div className="text-slate-800 leading-tight">
+                            {order.product_title}
+                          </div>
                         </TableCell>
                         <TableCell className="font-bold text-primary">
                           Rs {Number(order.price || 0).toLocaleString()}
