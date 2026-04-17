@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCart } from './cart-provider';
@@ -14,7 +13,20 @@ export function AddToCartButton({ product, size = 'default', className }: { prod
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
     addToCart(product);
+
+    // Track Meta Pixel Event
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'AddToCart', {
+        content_name: product.title,
+        content_ids: [product.id],
+        content_type: 'product',
+        value: product.price,
+        currency: 'PKR',
+      });
+    }
+
     toast({
       title: 'Added to Cart',
       description: `${product.title} has been added to your shopping cart.`,

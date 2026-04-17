@@ -61,7 +61,6 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
       
       if (data && data.length > 0) {
         setPaymentMethods(data);
-        // Only set default if one hasn't been selected yet
         if (!selectedMethodId) {
           setSelectedMethodId(data[0].id);
         }
@@ -133,6 +132,15 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
         });
 
         if (result.success) {
+          // Track Meta Pixel Event
+          if (typeof window !== 'undefined' && (window as any).fbq) {
+            (window as any).fbq('track', 'Purchase', {
+              content_name: product.title,
+              value: product.price,
+              currency: 'PKR',
+            });
+          }
+
           setIsSuccess(true);
           toast({
             title: "Order Submitted",
@@ -185,7 +193,6 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              {/* Order Summary */}
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="grid grid-cols-2 p-4 border-b bg-slate-50/50 text-xs font-bold uppercase text-slate-500">
                   <span>Product</span>
@@ -203,7 +210,6 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
                 </div>
               </div>
 
-              {/* Dynamic Payment Selection */}
               <div className="space-y-4">
                 <Label className="text-sm font-bold text-slate-700">Select Payment Method</Label>
                 <RadioGroup 
@@ -226,10 +232,8 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
                       </Label>
                     </div>
                   ))}
-                  {paymentMethods.length === 0 && <p className="text-xs text-muted-foreground italic">Loading payment methods...</p>}
                 </RadioGroup>
 
-                {/* Selected Method Details */}
                 {currentMethod && (
                   <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4 animate-in fade-in duration-300">
                     <div className="text-xs text-slate-500 space-y-2 leading-relaxed">
@@ -258,13 +262,9 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
                             <span className="font-bold text-slate-700">Account Number: </span>
                             <span className="text-blue-600 font-bold underline decoration-2 underline-offset-4">{currentMethod.account_number}</span>
                           </div>
-                          {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4 text-blue-400" />}
+                          {copied ? <Check className="h-4 w-4 text-green-600" /> : <Check className="h-4 w-4 text-blue-400" />}
                         </div>
                       </button>
-                      <div className="text-[10px] text-blue-400 font-medium flex items-center gap-1.5 pl-8">
-                        <span className="h-1 w-1 rounded-full bg-blue-400" />
-                        Click on the number to copy
-                      </div>
                     </div>
 
                     <div className="space-y-3 pt-2">
@@ -285,28 +285,18 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
                     </div>
 
                     <div className="space-y-3">
-                      <Label htmlFor="sender_name" className="text-sm font-bold text-slate-700">Sender Name (Your Account Name)</Label>
-                      <Input id="sender_name" name="sender_name" placeholder="Name on your receipt" required className="bg-white" />
+                      <Label htmlFor="sender_name" className="text-sm font-bold text-slate-700">Sender Name</Label>
+                      <Input id="sender_name" name="sender_name" required className="bg-white" />
                     </div>
 
                     <div className="space-y-3">
                       <Label htmlFor="sender_number" className="text-sm font-bold text-slate-700">Sender Phone Number</Label>
-                      <Input id="sender_number" name="sender_number" placeholder="03XXXXXXXXX" required className="bg-white" />
+                      <Input id="sender_number" name="sender_number" required className="bg-white" />
                     </div>
 
                     <div className="space-y-3">
-                      {/* Delivery Instructions Note */}
-                      <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 space-y-1">
-                        <p className="text-[13px] font-medium text-slate-800 text-right leading-relaxed" dir="rtl">
-                          📌 یہاں اپنا ای میل ایڈریس اور واٹس ایپ نمبر درج کریں جہاں آپ ای بک وصول کرنا چاہتے ہیں۔
-                        </p>
-                        <p className="text-[12px] text-primary font-bold text-right" dir="rtl">
-                          📘 آپ کو ای بک 10 منٹ کے اندر موصول ہو جائے گی۔
-                        </p>
-                      </div>
-                      
                       <Label htmlFor="delivery_contact" className="text-sm font-bold text-slate-700">Delivery Contact (Email or WhatsApp)</Label>
-                      <Input id="delivery_contact" name="delivery_contact" placeholder="To receive your book" required className="bg-white" />
+                      <Input id="delivery_contact" name="delivery_contact" required className="bg-white" />
                     </div>
                   </div>
                 )}
@@ -314,55 +304,8 @@ export function CheckoutDialog({ product, trigger }: CheckoutDialogProps) {
 
               <div className="space-y-4">
                 <Button type="submit" className="w-full h-12 text-base font-bold rounded-full shadow-lg shadow-primary/20" disabled={isPending || !currentMethod}>
-                  {isPending ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      <span>PLACING ORDER...</span>
-                    </div>
-                  ) : (
-                    'PLACE ORDER'
-                  )}
+                  {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'PLACE ORDER'}
                 </Button>
-
-                {/* Policy Section */}
-                <div className="rounded-xl border border-slate-200 bg-white p-5 space-y-4 text-[13px] leading-relaxed text-slate-600 shadow-sm">
-                  <div className="flex items-center gap-2 font-bold text-slate-900 border-b pb-2 mb-2">
-                    <Info className="h-4 w-4 text-primary" />
-                    <span>📘 Payment Verification & Order Policy</span>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="flex gap-2">
-                      <span className="text-primary shrink-0">🔹</span>
-                      <p>Payment verify hone ke baad hi aapko PDF book aapki email address par bhej di jayegi.</p>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <span className="text-primary shrink-0">🔹</span>
-                      <p>Apni email aur WhatsApp (jo aap ne provide kiya hoga) check karte rahein. Aapko 10 minutes ke andar book receive ho jayegi. Book receive hone ke baad aap usay download bhi kar sakte hain.</p>
-                    </div>
-
-                    <div className="flex gap-2 items-start bg-red-50 p-2 rounded-lg border border-red-100">
-                      <span className="text-red-500 shrink-0">🔹</span>
-                      <p className="text-red-700">
-                        <strong>⚠️ Warning:</strong> Agar aap payment ka screenshot fake dete hain ya payment humein receive nahi hoti, to aapka order bina kisi notice ke cancel kar diya jayega.
-                      </p>
-                    </div>
-
-                    <div className="flex gap-2 font-medium bg-blue-50 p-2 rounded-lg border border-blue-100">
-                      <span className="text-primary shrink-0">🔹</span>
-                      <p>🙏 Request: Meherbani karke sahi information provide karein taake aapka order jaldi process ho sake.</p>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 text-center font-bold text-slate-800 border-t">
-                    Shukriya! 😊
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-[10px] text-slate-400 text-center leading-relaxed px-4 opacity-70">
-                Your personal data will be used to process your order and support your experience throughout this website.
               </div>
             </form>
           </div>
