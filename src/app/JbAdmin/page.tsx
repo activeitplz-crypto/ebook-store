@@ -26,12 +26,16 @@ import {
   TrendingUp, 
   LogOut,
   Clock,
-  Truck
+  Truck,
+  ExternalLink,
+  ImageIcon
 } from 'lucide-react';
 import { format, subDays, isAfter, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { adminLogout } from './actions';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default async function JbAdminPage() {
   const cookieStore = await cookies();
@@ -158,6 +162,7 @@ export default async function JbAdminPage() {
                     <TableHead className="font-bold">Products</TableHead>
                     <TableHead className="font-bold">Price</TableHead>
                     <TableHead className="font-bold">Method</TableHead>
+                    <TableHead className="font-bold">Receipt</TableHead>
                     <TableHead className="font-bold">Date</TableHead>
                     <TableHead className="font-bold text-right">Status</TableHead>
                   </TableRow>
@@ -181,8 +186,8 @@ export default async function JbAdminPage() {
                             {order.delivery_contact}
                           </div>
                         </TableCell>
-                        <TableCell className="min-w-[250px] py-4" title={order.product_title}>
-                          <div className="text-slate-800 leading-tight">
+                        <TableCell className="min-w-[200px] max-w-[300px] py-4" title={order.product_title}>
+                          <div className="text-slate-800 leading-tight break-words">
                             {order.product_title}
                           </div>
                         </TableCell>
@@ -193,6 +198,30 @@ export default async function JbAdminPage() {
                           <Badge variant="outline" className="bg-slate-50 text-[10px] uppercase tracking-wider">
                             {order.payment_method || 'N/A'}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {order.screenshot_url ? (
+                            <Link 
+                              href={order.screenshot_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="group relative block h-10 w-10 overflow-hidden rounded border border-slate-200 hover:border-primary transition-colors"
+                            >
+                              <Image 
+                                src={order.screenshot_url} 
+                                alt="Payment Proof" 
+                                fill 
+                                className="object-cover group-hover:scale-110 transition-transform"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                <ExternalLink className="h-3 w-3 text-white" />
+                              </div>
+                            </Link>
+                          ) : (
+                            <div className="h-10 w-10 rounded border border-dashed border-slate-200 flex items-center justify-center text-slate-300">
+                              <ImageIcon className="h-4 w-4" />
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
                           {format(new Date(order.created_at), 'MMM dd, yyyy')}
