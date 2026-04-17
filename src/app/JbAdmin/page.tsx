@@ -25,7 +25,8 @@ import {
   Calendar, 
   TrendingUp, 
   LogOut,
-  Clock
+  Clock,
+  Truck
 } from 'lucide-react';
 import { format, subDays, isAfter, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -56,8 +57,8 @@ export default async function JbAdminPage() {
     );
   }
 
-  // Make check case-insensitive to handle manual updates in Supabase dashboard (e.g., 'Approved' or 'approved')
-  const approvedOrders = orders.filter(o => o.status?.toLowerCase() === 'approved');
+  // Earnings are now calculated based on 'confirmed' status
+  const confirmedOrders = orders.filter(o => o.status?.toLowerCase() === 'confirmed');
   
   // Stats Calculation
   const now = new Date();
@@ -68,17 +69,17 @@ export default async function JbAdminPage() {
 
   const stats = {
     totalOrders: orders.length,
-    totalEarnings: approvedOrders.reduce((sum, o) => sum + Number(o.price || 0), 0),
-    todayEarnings: approvedOrders
+    totalEarnings: confirmedOrders.reduce((sum, o) => sum + Number(o.price || 0), 0),
+    todayEarnings: confirmedOrders
       .filter(o => isAfter(new Date(o.created_at), todayStart))
       .reduce((sum, o) => sum + Number(o.price || 0), 0),
-    sevenDaysEarnings: approvedOrders
+    sevenDaysEarnings: confirmedOrders
       .filter(o => isAfter(new Date(o.created_at), sevenDaysAgo))
       .reduce((sum, o) => sum + Number(o.price || 0), 0),
-    fifteenDaysEarnings: approvedOrders
+    fifteenDaysEarnings: confirmedOrders
       .filter(o => isAfter(new Date(o.created_at), fifteenDaysAgo))
       .reduce((sum, o) => sum + Number(o.price || 0), 0),
-    thirtyDaysEarnings: approvedOrders
+    thirtyDaysEarnings: confirmedOrders
       .filter(o => isAfter(new Date(o.created_at), thirtyDaysAgo))
       .reduce((sum, o) => sum + Number(o.price || 0), 0),
   };
@@ -112,32 +113,32 @@ export default async function JbAdminPage() {
             title="Total Earning" 
             value={stats.totalEarnings} 
             icon={<TrendingUp className="h-6 w-6" />} 
-            description="Lifetime revenue from approved orders"
+            description="Lifetime revenue from confirmed orders"
             variant="primary"
           />
           <StatCard 
             title="Today's Earning" 
             value={stats.todayEarnings} 
             icon={<Clock className="h-6 w-6" />} 
-            description="Approved sales since midnight"
+            description="Confirmed sales since midnight"
           />
           <StatCard 
             title="Last 7 Days" 
             value={stats.sevenDaysEarnings} 
             icon={<Calendar className="h-6 w-6" />} 
-            description="Approved revenue in last week"
+            description="Confirmed revenue in last week"
           />
           <StatCard 
             title="Last 15 Days" 
             value={stats.fifteenDaysEarnings} 
             icon={<Calendar className="h-6 w-6" />} 
-            description="Approved revenue in last 15 days"
+            description="Confirmed revenue in last 15 days"
           />
           <StatCard 
             title="Last 30 Days" 
             value={stats.thirtyDaysEarnings} 
             icon={<Calendar className="h-6 w-6" />} 
-            description="Approved revenue in last month"
+            description="Confirmed revenue in last month"
           />
         </div>
 
@@ -148,57 +149,66 @@ export default async function JbAdminPage() {
             <CardDescription>The most recent 50 transactions on your store.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader className="bg-slate-50">
-                <TableRow>
-                  <TableHead className="font-bold">Customer</TableHead>
-                  <TableHead className="font-bold">Products</TableHead>
-                  <TableHead className="font-bold">Price</TableHead>
-                  <TableHead className="font-bold">Method</TableHead>
-                  <TableHead className="font-bold">Date</TableHead>
-                  <TableHead className="font-bold text-right">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.slice(0, 50).map((order) => {
-                  const isApproved = order.status?.toLowerCase() === 'approved';
-                  const isRejected = order.status?.toLowerCase() === 'rejected';
-                  
-                  return (
-                    <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
-                      <TableCell className="font-medium">
-                        <div className="flex flex-col">
-                          <span>{order.sender_name}</span>
-                          <span className="text-[10px] text-muted-foreground">{order.sender_number}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-[200px] truncate" title={order.product_title}>
-                        {order.product_title}
-                      </TableCell>
-                      <TableCell className="font-bold text-primary">
-                        Rs {Number(order.price || 0).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="bg-slate-50 text-[10px] uppercase tracking-wider">
-                          {order.payment_method || 'N/A'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {format(new Date(order.created_at), 'MMM dd, yyyy')}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge 
-                          variant={isApproved ? 'default' : isRejected ? 'destructive' : 'secondary'}
-                          className="capitalize text-[10px]"
-                        >
-                          {order.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-slate-50">
+                  <TableRow>
+                    <TableHead className="font-bold">Customer</TableHead>
+                    <TableHead className="font-bold">Delivery Contact</TableHead>
+                    <TableHead className="font-bold">Products</TableHead>
+                    <TableHead className="font-bold">Price</TableHead>
+                    <TableHead className="font-bold">Method</TableHead>
+                    <TableHead className="font-bold">Date</TableHead>
+                    <TableHead className="font-bold text-right">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orders.slice(0, 50).map((order) => {
+                    const isConfirmed = order.status?.toLowerCase() === 'confirmed';
+                    const isRejected = order.status?.toLowerCase() === 'rejected';
+                    
+                    return (
+                      <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
+                        <TableCell className="font-medium">
+                          <div className="flex flex-col">
+                            <span>{order.sender_name}</span>
+                            <span className="text-[10px] text-muted-foreground">{order.sender_number}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-slate-100 p-1.5 rounded-md w-fit">
+                            <Truck className="h-3 w-3 text-primary" />
+                            {order.delivery_contact}
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-[200px] truncate" title={order.product_title}>
+                          {order.product_title}
+                        </TableCell>
+                        <TableCell className="font-bold text-primary">
+                          Rs {Number(order.price || 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-slate-50 text-[10px] uppercase tracking-wider">
+                            {order.payment_method || 'N/A'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {format(new Date(order.created_at), 'MMM dd, yyyy')}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Badge 
+                            variant={isConfirmed ? 'default' : isRejected ? 'destructive' : 'secondary'}
+                            className="capitalize text-[10px]"
+                          >
+                            {order.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
             {orders.length === 0 && (
               <div className="py-20 text-center text-muted-foreground italic">
                 No orders found in the database.

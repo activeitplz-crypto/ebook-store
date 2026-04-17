@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   title: string;
@@ -32,7 +33,7 @@ export interface Order {
   sender_number: string;
   delivery_contact: string;
   screenshot_url: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'confirmed' | 'rejected';
   created_at: string;
 }
 
