@@ -46,7 +46,7 @@ export default async function JbAdminPage() {
 
   const supabase = await createClient();
   
-  // Fetch all orders to calculate stats
+  // Fetch all orders
   const { data: orders, error } = await supabase
     .from('orders')
     .select('*')
@@ -60,10 +60,11 @@ export default async function JbAdminPage() {
     );
   }
 
-  // Earnings are calculated based on 'confirmed' status
-  const confirmedOrders = orders.filter(o => o.status?.toLowerCase() === 'confirmed');
+  const orderList = orders || [];
+
+  // Stats Calculation - Ensuring case-insensitive matching for 'confirmed'
+  const confirmedOrders = orderList.filter(o => o.status?.toLowerCase() === 'confirmed');
   
-  // Stats Calculation
   const now = new Date();
   const todayStart = startOfDay(now);
   const sevenDaysAgo = subDays(now, 7);
@@ -71,7 +72,7 @@ export default async function JbAdminPage() {
   const thirtyDaysAgo = subDays(now, 30);
 
   const stats = {
-    totalOrders: orders.length,
+    totalOrders: orderList.length,
     totalEarnings: confirmedOrders.reduce((sum, o) => sum + Number(o.price || 0), 0),
     todayEarnings: confirmedOrders
       .filter(o => isAfter(new Date(o.created_at), todayStart))
@@ -166,7 +167,7 @@ export default async function JbAdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.slice(0, 50).map((order) => {
+                  {orderList.slice(0, 50).map((order) => {
                     return (
                       <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
                         <TableCell className="font-medium">
@@ -227,7 +228,7 @@ export default async function JbAdminPage() {
                 </TableBody>
               </Table>
             </div>
-            {orders.length === 0 && (
+            {orderList.length === 0 && (
               <div className="py-20 text-center text-muted-foreground italic">
                 No orders found in the database.
               </div>

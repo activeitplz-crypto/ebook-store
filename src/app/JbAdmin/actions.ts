@@ -41,6 +41,8 @@ export async function updateOrderStatus(orderId: string, status: 'pending' | 'co
   }
 
   const supabase = await createClient();
+  
+  // Update the status in the database
   const { error } = await supabase
     .from('orders')
     .update({ status })
@@ -51,6 +53,7 @@ export async function updateOrderStatus(orderId: string, status: 'pending' | 'co
     return { error: error.message };
   }
 
-  revalidatePath('/JbAdmin');
+  // Force revalidation of the admin page data
+  revalidatePath('/JbAdmin', 'page');
   return { success: true };
 }

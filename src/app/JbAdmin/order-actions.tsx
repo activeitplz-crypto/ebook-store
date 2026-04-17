@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface OrderActionsProps {
   orderId: string;
@@ -20,6 +21,7 @@ interface OrderActionsProps {
 export function OrderActions({ orderId, currentStatus }: OrderActionsProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleStatusUpdate = (status: 'pending' | 'confirmed' | 'rejected') => {
     startTransition(async () => {
@@ -29,6 +31,8 @@ export function OrderActions({ orderId, currentStatus }: OrderActionsProps) {
           title: 'Status Updated',
           description: `Order is now ${status}.`,
         });
+        // Force a client-side refresh to show updated stats immediately
+        router.refresh();
       } else {
         toast({
           variant: 'destructive',
