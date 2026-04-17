@@ -71,7 +71,7 @@ export default async function JbAdminPage() {
 
   const orderList = orders || [];
 
-  // Stats Calculation - Exact matching for 'confirmed' status
+  // Stats Calculation - Case-insensitive and robust price parsing
   const confirmedOrders = orderList.filter(o => String(o.status).toLowerCase() === 'confirmed');
   
   const now = new Date();
@@ -100,7 +100,7 @@ export default async function JbAdminPage() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="container mx-auto space-y-8">
-        {/* Header */}
+        {/* Header with Logo */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
             <div className="relative h-16 w-16 overflow-hidden rounded-xl shadow-md border bg-white p-1 shrink-0">
